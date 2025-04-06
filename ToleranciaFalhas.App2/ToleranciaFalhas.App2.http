@@ -1,0 +1,6 @@
+@ToleranciaFalhas.App2_HostAddress = http://localhost:6000
+
+GET {{ToleranciaFalhas.App2_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
