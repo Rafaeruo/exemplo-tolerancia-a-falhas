@@ -29,4 +29,10 @@ public class WeatherForecastController : ControllerBase
         })
         .ToArray();
     }
+
+     [HttpGet("failuretest")]
+    public IActionResult FailureTest()
+    {
+        return StatusCode(500);
+    }
 }
