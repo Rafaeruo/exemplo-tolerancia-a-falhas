@@ -1,5 +1,3 @@
-using ToleranciaFalhas.App1.Saga;
-
 namespace ToleranciaFalhas.App1
 {
     public class Program
@@ -13,7 +11,6 @@ namespace ToleranciaFalhas.App1
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
-            builder.Services.AddSingleton<ExampleSaga>();
 
             var app = builder.Build();
 
