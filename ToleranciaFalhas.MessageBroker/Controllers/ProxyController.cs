@@ -76,20 +76,20 @@ namespace ToleranciaFalhas.MessageBroker.Controllers
             {
                 var response = await client.SendAsync(httpRequestMessage);
 
-                if (response.IsSuccessStatusCode)
+                if ((int)response.StatusCode >= 500)
                 {
-                    _circuitBreakerManager.ReportSuccess(service);
+                    _circuitBreakerManager.ReportFailure(service);
                 }
                 else
                 {
-                    _circuitBreakerManager.ReportFailure(service);
+                    _circuitBreakerManager.ReportSuccess(service);
                 }
 
                 return StatusCode((int)response.StatusCode, await response.Content.ReadAsStringAsync());
             } 
             catch (Exception e) 
             {
-                // TODO: Should we report a failure to the circuit breaker here too? These will most likely be network failures, so not sure if wed want that 
+                _circuitBreakerManager.ReportFailure(service);
                 _logger.LogError(e, "It's so over :sob:");
                 return StatusCode(500, e.Message);
             }
