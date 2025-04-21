@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using ToleranciaFalhas.App1.Saga;
 
 namespace ToleranciaFalhas.App1.Controllers;
 
@@ -19,8 +20,10 @@ public class WeatherForecastController : ControllerBase
     }
 
     [HttpGet(Name = "GetWeatherForecast")]
-    public IEnumerable<WeatherForecast> Get()
+    public async Task<IEnumerable<WeatherForecast>> Get([FromServices] ExampleSaga saga)
     {
+        var @event = new ExampleEvent(new ExampleState());
+        await saga.Update(@event);
         return Enumerable.Range(1, 5).Select(index => new WeatherForecast
         {
             Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
