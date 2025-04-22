@@ -4,6 +4,8 @@ namespace ToleranciaFalhas.App1.Saga
 {
     public class ExampleSaga : Saga<ExampleState, ExampleStep, Guid>
     {
+        protected override ExampleStep[] FinalSteps => [ExampleStep.Finished];
+
         public ExampleSaga(IServiceScopeFactory serviceScopeFactory)
             : base (serviceScopeFactory)
         {
@@ -11,7 +13,7 @@ namespace ToleranciaFalhas.App1.Saga
             {
                 builder.When<ExampleEvent>(ExampleStep.NotStarted)
                     .TransitionTo(ExampleStep.Started)
-                    .ThenExecute(_ => 
+                    .ThenExecute((_, _) => 
                     {
                         // publish a message to a queue, make an api call, etc
                         Console.WriteLine("Doing something meaningful...");

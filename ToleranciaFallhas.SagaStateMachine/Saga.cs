@@ -9,8 +9,9 @@ namespace ToleranciaFalhas.App1.Saga
         where TKey : notnull
     {
         protected ConcurrentDictionary<TKey, TState> Instances { get; } = new();
+        protected abstract TStep[] FinalSteps { get; }
         private ConcurrentDictionary<TransitionKey<TStep>, TStep> _transitions = new();
-        private ConcurrentDictionary<TransitionKey<TStep>, Func<IServiceProvider, Task>> _actions = new();
+        private ConcurrentDictionary<TransitionKey<TStep>, Func<IServiceProvider, TState, Task>> _actions = new();
         private bool _isConfigured;
 
         private readonly IServiceScopeFactory _serviceScopeFactory;
@@ -57,7 +58,12 @@ namespace ToleranciaFalhas.App1.Saga
                     if (_actions.TryGetValue(transitionKey, out var action))
                     {
                         using var scope = _serviceScopeFactory.CreateScope();
-                        await action(scope.ServiceProvider);
+                        await action(scope.ServiceProvider, Instances[key]);
+                    }
+
+                    if (FinalSteps.Contains(nextStep))
+                    {
+                        Instances.Remove(key, out _);
                     }
                 }
             }
@@ -76,17 +82,17 @@ namespace ToleranciaFalhas.App1.Saga
         where TStep : Enum
     {
         private readonly ConcurrentDictionary<TransitionKey<TStep>, TStep> _transitions = new();
-        private readonly ConcurrentDictionary<TransitionKey<TStep>, Func<IServiceProvider, Task>> _actions = new();
+        private readonly ConcurrentDictionary<TransitionKey<TStep>, Func<IServiceProvider, TState, Task>> _actions = new();
 
         public ConcurrentDictionary<TransitionKey<TStep>, TStep> BuildTransitions() => _transitions;
-        public ConcurrentDictionary<TransitionKey<TStep>, Func<IServiceProvider, Task>> BuildActions() => _actions;
+        public ConcurrentDictionary<TransitionKey<TStep>, Func<IServiceProvider, TState, Task>> BuildActions() => _actions;
 
         internal void AddTransition(TransitionKey<TStep> key, TStep nextStep)
         {
             _transitions[key] = nextStep;
         }
 
-        internal void AddAction(TransitionKey<TStep> key, Func<IServiceProvider, Task> action)
+        internal void AddAction(TransitionKey<TStep> key, Func<IServiceProvider, TState, Task> action)
         {
             _actions[key] = action;
         }
@@ -133,16 +139,16 @@ namespace ToleranciaFalhas.App1.Saga
             _from = from;
         }
 
-        public StateMachineBuilder<TState, TStep, TKey> ThenExecute(Action<IServiceProvider> action)
+        public StateMachineBuilder<TState, TStep, TKey> ThenExecute(Action<IServiceProvider, TState> action)
         {
-            _parent.AddAction(_from, serviceProvider => {
-                action(serviceProvider);
+            _parent.AddAction(_from, (serviceProvider, state) => {
+                action(serviceProvider, state);
                 return Task.CompletedTask;
             });
             return _parent;
         }
 
-        public StateMachineBuilder<TState, TStep, TKey> ThenExecute(Func<IServiceProvider, Task> action)
+        public StateMachineBuilder<TState, TStep, TKey> ThenExecute(Func<IServiceProvider, TState, Task> action)
         {
             _parent.AddAction(_from, action);
             return _parent;
