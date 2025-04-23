@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-	<ProjectReference Include="..\ToleranciaFallhas.SagaStateMachine\ToleranciaFallhas.Shared.csproj" />
+    <ProjectReference Include="..\ToleranciaFallhas.Shared\ToleranciaFallhas.Shared.csproj" />
   </ItemGroup>
 
 </Project>

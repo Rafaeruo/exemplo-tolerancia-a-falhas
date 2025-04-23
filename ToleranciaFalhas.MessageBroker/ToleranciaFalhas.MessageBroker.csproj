@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ToleranciaFallhas.SagaStateMachine\ToleranciaFallhas.Shared.csproj" />
+    <ProjectReference Include="..\ToleranciaFallhas.Shared\ToleranciaFallhas.Shared.csproj" />
   </ItemGroup>
 
 </Project>
