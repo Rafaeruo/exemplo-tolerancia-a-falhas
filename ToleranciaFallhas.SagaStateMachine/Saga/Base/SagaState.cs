@@ -1,4 +1,4 @@
-namespace ToleranciaFalhas.App1.Saga
+namespace ToleranciaFalhas.Shared.Saga.Base
 {
     public abstract record SagaState<TStep, TKey>
         where TStep : Enum

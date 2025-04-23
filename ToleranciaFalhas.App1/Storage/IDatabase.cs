@@ -1,4 +1,4 @@
-namespace ToleranciaFalhas.App1.Database;
+namespace ToleranciaFalhas.OrderService.Database;
 
 public interface IDatabase<TKey, TData> where TKey : new()
 {

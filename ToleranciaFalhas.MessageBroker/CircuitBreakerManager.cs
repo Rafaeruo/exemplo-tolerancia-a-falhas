@@ -9,7 +9,7 @@ namespace ToleranciaFalhas.MessageBroker
         private readonly int _failureThreshold;
         private readonly TimeSpan _openToHalfOpenWaitTime;
 
-        public CircuitBreakerManager(int failureThreshold = 10, TimeSpan? waitTime = null) // TODO: maybe make these configurable per service?
+        public CircuitBreakerManager(int failureThreshold = 10, TimeSpan? waitTime = null)
         {
             waitTime ??= TimeSpan.FromSeconds(30);
 

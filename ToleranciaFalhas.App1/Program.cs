@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
-using ToleranciaFalhas.App1.Database;
-using ToleranciaFalhas.App1.Models;
+using ToleranciaFalhas.OrderService.Database;
+using ToleranciaFalhas.OrderService.Models;
 
-namespace ToleranciaFalhas.App1
+namespace ToleranciaFalhas.OrderService
 {
     public class Program
     {
@@ -15,11 +15,13 @@ namespace ToleranciaFalhas.App1
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+            builder.Services.AddHttpClient();
 
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
+            builder.Services.Configure<ProxyConfig>(builder.Configuration.GetSection("Proxy"));
 
             builder.Services.AddSingleton<IDatabase<Guid, Order>, InMemoryDatabase>();
 

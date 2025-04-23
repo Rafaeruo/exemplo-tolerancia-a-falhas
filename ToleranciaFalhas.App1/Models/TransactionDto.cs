@@ -1,4 +1,6 @@
-namespace ToleranciaFalhas.App1.Models;
+using ToleranciaFallhas.Shared.Saga.OrderSaga;
+
+namespace ToleranciaFalhas.OrderService.Models;
 
 public record TransactionDto
 {

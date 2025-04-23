@@ -1,10 +1,10 @@
-using System.Threading.Tasks;
-using System.Transactions;
 using Microsoft.AspNetCore.Mvc;
-using ToleranciaFalhas.App1.Database;
-using ToleranciaFalhas.App1.Models;
+using Microsoft.Extensions.Options;
+using ToleranciaFalhas.OrderService.Database;
+using ToleranciaFalhas.OrderService.Models;
+using ToleranciaFallhas.Shared.Saga.OrderSaga;
 
-namespace ToleranciaFalhas.App1.Controllers;
+namespace ToleranciaFalhas.OrderService.Controllers;
 
 [ApiController]
 [Route("[controller]")]
@@ -16,10 +16,17 @@ public class ShopController : ControllerBase
 
     private readonly IHttpClientFactory _httpClientFactory;
 
-    public ShopController(ILogger<ShopController> logger, IHttpClientFactory httpClientFactory, IDatabase<Guid, Order> database)
+    private readonly ProxyConfig _proxyConfig;
+
+    public ShopController(
+        ILogger<ShopController> logger, 
+        IHttpClientFactory httpClientFactory,
+        IOptions<ProxyConfig> proxyConfig,
+        IDatabase<Guid, Order> database)
     {
         _logger = logger;
         _httpClientFactory = httpClientFactory;
+        _proxyConfig = proxyConfig.Value;
         _database = database;
     }
 
@@ -34,54 +41,38 @@ public class ShopController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> PostOrder([FromBody] InOrderDto item)
     {
-
-        var client = _httpClientFactory.CreateClient();
-
-        var request = new HttpRequestMessage
-        {
-            Method = HttpMethod.Post,
-            RequestUri = new Uri("http://127.0.0.1:7000/Saga/")
-        };
-
-        var response = await client.SendAsync(request);
-
-        TransactionDto? transaction = await response.Content.ReadFromJsonAsync<TransactionDto>();
-
-        if (transaction == null)
-        {
-            return StatusCode(500, "Saga orchestrator failed to respond.");
-        }
-
-        Order order = new Order
+        var order = new Order
         {
             Item = item.Item,
-            PaymentStatus = transaction.Step
+            PaymentStatus = PaymentStatus.Pending
         };
 
-        order.SetTransactionKey(transaction.Key);
+        order.Id = _database.Save(order);
 
-        Guid orderNumber = _database.Save(order);
+        var client = _httpClientFactory.CreateClient();
+        var content = new OrderSagaStateDto(order.PaymentStatus, order.Id);
+        var response = await client.PutAsJsonAsync(_proxyConfig.BaseUrl + "/OrderEvents/NewOrderEvent", content);
 
-        _logger.LogInformation("Created new order with id: {}", orderNumber.ToString());
+        Response.Headers.Append("location", "/Shop/" + order.Id.ToString());
 
-        Response.Headers.Append("location", "/Shop/" + orderNumber.ToString());
-
-        return StatusCode(201, new OutOrderDto
-        {
-            Item = order.Item,
-            PaymentStatus = order.PaymentStatus,
-            OrderNumber = orderNumber,
-        });
+        return StatusCode(201, order);
     }
 
-    [HttpPut]
-    public void Put([FromBody] OutOrderDto order)
+    [HttpPatch]
+    [Route("paymentApproved/{orderId}")]
+    public void ConfirmPayment(Guid orderId)
     {
-        _database.Update(order.OrderNumber, order);
+        var order = _database.Get(orderId);
+        order.PaymentStatus = PaymentStatus.Paid;
+        _database.Update(orderId, order);
+    }
 
-        if (order.PaymentStatus == PaymentStatus.Paid)
-        {
-            _logger.LogInformation("Shipping to customer!");
-        }
+    [HttpPatch]
+    [Route("paymentRejected/{orderId}")]
+    public void RejectPayment(Guid orderId)
+    {
+        var order = _database.Get(orderId);
+        order.PaymentStatus = PaymentStatus.PaymentRejected;
+        _database.Update(orderId, order);
     }
 }

@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using ToleranciaFalhas.App1.Saga;
+using ToleranciaFalhas.MessageBroker.Saga;
 
 namespace ToleranciaFalhas.MessageBroker
 {
@@ -18,8 +18,9 @@ namespace ToleranciaFalhas.MessageBroker
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
             builder.Services.AddHttpClient();
-            builder.Services.AddSingleton<CircuitBreakerManager>(); // this calls the constructor with default parameter values; we can change that with a lambda on this very call
-            builder.Services.AddSingleton<ExampleSaga>();
+
+            builder.Services.AddSingleton<CircuitBreakerManager>();
+            builder.Services.AddSingleton<OrderSaga>();
 
             builder.Services.AddControllers().AddJsonOptions(options =>
             {

@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Concurrent;
 
-namespace ToleranciaFalhas.App1.Saga
+namespace ToleranciaFalhas.Shared.Saga.Base
 {
     public abstract class Saga<TState, TStep, TKey>
         where TState : SagaState<TStep, TKey>
@@ -10,7 +10,7 @@ namespace ToleranciaFalhas.App1.Saga
     {
         protected ConcurrentDictionary<TKey, TState> Instances { get; } = new();
         private ConcurrentDictionary<TransitionKey<TStep>, TStep> _transitions = new();
-        private ConcurrentDictionary<TransitionKey<TStep>, Func<IServiceProvider, Task>> _actions = new();
+        private ConcurrentDictionary<TransitionKey<TStep>, Func<IServiceProvider, TState, Task>> _actions = new();
         private bool _isConfigured;
 
         private readonly IServiceScopeFactory _serviceScopeFactory;
@@ -38,33 +38,25 @@ namespace ToleranciaFalhas.App1.Saga
                 throw new InvalidOperationException("Saga state machine is not configured.");
             }
 
-            try
+            var key = @event.GetKey();
+
+            if (!Instances.TryGetValue(key, out var instance))
             {
-                var key = @event.GetKey();
-
-                if (!Instances.TryGetValue(key, out var instance))
-                {
-                    Instances[key] = @event.Apply();
-                    instance = Instances[key];
-                }
-
-                var transitionKey = new TransitionKey<TStep>(instance.Step, @event.GetType().FullName!);
-
-                if (_transitions.TryGetValue(transitionKey, out var nextStep))
-                {
-                    Instances[key] = (TState)Instances[key].WithStep(nextStep);
-
-                    if (_actions.TryGetValue(transitionKey, out var action))
-                    {
-                        using var scope = _serviceScopeFactory.CreateScope();
-                        await action(scope.ServiceProvider);
-                    }
-                }
+                Instances[key] = @event.Apply();
+                instance = Instances[key];
             }
-            catch (Exception)
+
+            var transitionKey = new TransitionKey<TStep>(instance.Step, @event.GetType().FullName!);
+
+            if (_transitions.TryGetValue(transitionKey, out var nextStep))
             {
-                // TODO
-                throw;
+                Instances[key] = (TState)Instances[key].WithStep(nextStep);
+
+                if (_actions.TryGetValue(transitionKey, out var action))
+                {
+                    using var scope = _serviceScopeFactory.CreateScope();
+                    await action(scope.ServiceProvider, Instances[key]);
+                }
             }
         }
     }
@@ -76,17 +68,17 @@ namespace ToleranciaFalhas.App1.Saga
         where TStep : Enum
     {
         private readonly ConcurrentDictionary<TransitionKey<TStep>, TStep> _transitions = new();
-        private readonly ConcurrentDictionary<TransitionKey<TStep>, Func<IServiceProvider, Task>> _actions = new();
+        private readonly ConcurrentDictionary<TransitionKey<TStep>, Func<IServiceProvider, TState, Task>> _actions = new();
 
         public ConcurrentDictionary<TransitionKey<TStep>, TStep> BuildTransitions() => _transitions;
-        public ConcurrentDictionary<TransitionKey<TStep>, Func<IServiceProvider, Task>> BuildActions() => _actions;
+        public ConcurrentDictionary<TransitionKey<TStep>, Func<IServiceProvider, TState, Task>> BuildActions() => _actions;
 
         internal void AddTransition(TransitionKey<TStep> key, TStep nextStep)
         {
             _transitions[key] = nextStep;
         }
 
-        internal void AddAction(TransitionKey<TStep> key, Func<IServiceProvider, Task> action)
+        internal void AddAction(TransitionKey<TStep> key, Func<IServiceProvider, TState, Task> action)
         {
             _actions[key] = action;
         }
@@ -133,16 +125,16 @@ namespace ToleranciaFalhas.App1.Saga
             _from = from;
         }
 
-        public StateMachineBuilder<TState, TStep, TKey> ThenExecute(Action<IServiceProvider> action)
+        public StateMachineBuilder<TState, TStep, TKey> ThenExecute(Action<IServiceProvider, TState> action)
         {
-            _parent.AddAction(_from, serviceProvider => {
-                action(serviceProvider);
+            _parent.AddAction(_from, (serviceProvider, state) => {
+                action(serviceProvider, state);
                 return Task.CompletedTask;
             });
             return _parent;
         }
 
-        public StateMachineBuilder<TState, TStep, TKey> ThenExecute(Func<IServiceProvider, Task> action)
+        public StateMachineBuilder<TState, TStep, TKey> ThenExecute(Func<IServiceProvider, TState, Task> action)
         {
             _parent.AddAction(_from, action);
             return _parent;

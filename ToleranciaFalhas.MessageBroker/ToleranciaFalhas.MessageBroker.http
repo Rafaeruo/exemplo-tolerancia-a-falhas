@@ -1,6 +1,0 @@
-@ToleranciaFalhas.MessageBroker_HostAddress = http://localhost:7000
-
-GET {{ToleranciaFalhas.MessageBroker_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

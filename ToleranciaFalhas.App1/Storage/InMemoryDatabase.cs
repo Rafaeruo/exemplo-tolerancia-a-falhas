@@ -1,16 +1,17 @@
 using System.Collections.Concurrent;
-using ToleranciaFalhas.App1.Models;
+using ToleranciaFalhas.OrderService.Models;
 
-namespace ToleranciaFalhas.App1.Database;
+namespace ToleranciaFalhas.OrderService.Database;
 
 public class InMemoryDatabase : IDatabase<Guid, Order>
 {
     private readonly ConcurrentDictionary<Guid, Order> _database = new();
-    public Order Get(Guid key)
+
+    public Order Get(Guid id)
     {
-        if (!_database.TryGetValue(key, out var data) || data == null)
+        if (!_database.TryGetValue(id, out var data) || data == null)
         {
-            throw new KeyNotFoundException("Unable to find " + key.ToString() + " in the dictionary");
+            throw new KeyNotFoundException("Unable to find " + id.ToString() + " in the dictionary");
         }
         return data;
     }
@@ -29,7 +30,7 @@ public class InMemoryDatabase : IDatabase<Guid, Order>
     {
         _database.AddOrUpdate(key, data, (_, old) =>
         {
-            data.SetTransactionKey(old.GetTransactionKey());
+            data.Id = old.Id;
             return data;
         });
     }
