@@ -51,7 +51,7 @@ public class ShopController : ControllerBase
 
         var client = _httpClientFactory.CreateClient();
         var content = new OrderSagaStateDto(order.OrderStatus, order.Id);
-        var response = await client.PutAsJsonAsync(_proxyConfig.BaseUrl + "/OrderEvents/NewOrderEvent", content);
+        await client.PutAsJsonAsync(_proxyConfig.BaseUrl + "/OrderEvents/NewOrderEvent", content);
 
         Response.Headers.Append("location", "/Shop/" + order.Id.ToString());
 

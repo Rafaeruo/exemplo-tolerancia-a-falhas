@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using System.Text;
 
 namespace ToleranciaFalhas.MessageBroker.Controllers
 {
@@ -65,6 +66,18 @@ namespace ToleranciaFalhas.MessageBroker.Controllers
                 RequestUri = new Uri($"{serviceConfig.BaseUrl}/{path}")
             };
 
+            // Copy the body, if it exists
+            if (Request.ContentLength > 0)
+            {
+                Request.EnableBuffering();
+                Request.Body.Position = 0;
+                using var reader = new StreamReader(Request.Body, Encoding.UTF8, leaveOpen: true);
+                var body = await reader.ReadToEndAsync();
+                Request.Body.Position = 0;
+
+                httpRequestMessage.Content = new StringContent(body, Encoding.UTF8, Request.ContentType ?? "application/json");
+            }
+
             var client = _httpClientFactory.CreateClient();
 
             try 
@@ -88,7 +101,6 @@ namespace ToleranciaFalhas.MessageBroker.Controllers
                 _logger.LogError(e, "It's so over :sob:");
                 return StatusCode(500, e.Message);
             }
-
         }
     }
 }
