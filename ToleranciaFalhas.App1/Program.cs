@@ -1,3 +1,7 @@
+using System.Text.Json.Serialization;
+using ToleranciaFalhas.App1.Database;
+using ToleranciaFalhas.App1.Models;
+
 namespace ToleranciaFalhas.App1
 {
     public class Program
@@ -11,6 +15,13 @@ namespace ToleranciaFalhas.App1
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
+
+            builder.Services.AddSingleton<IDatabase<Guid, Order>, InMemoryDatabase>();
 
             var app = builder.Build();
 

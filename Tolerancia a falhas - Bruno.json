@@ -1,0 +1,481 @@
+{
+  "name": "Tolerancia a falhas - swe 2",
+  "version": "1",
+  "items": [
+    {
+      "type": "folder",
+      "name": "Message Broker",
+      "filename": "Message Broker",
+      "root": {
+        "meta": {
+          "name": "Message Broker"
+        }
+      },
+      "items": [
+        {
+          "type": "folder",
+          "name": "App1",
+          "filename": "App1",
+          "root": {
+            "meta": {
+              "name": "App1"
+            }
+          },
+          "items": [
+            {
+              "type": "http",
+              "name": "Weather Forecast",
+              "filename": "Weather Forecast.bru",
+              "seq": 1,
+              "request": {
+                "url": "{{messageBrokerUrl}}/App1/weatherforecast",
+                "method": "GET",
+                "headers": [],
+                "params": [],
+                "body": {
+                  "mode": "none",
+                  "formUrlEncoded": [],
+                  "multipartForm": [],
+                  "file": []
+                },
+                "script": {},
+                "vars": {},
+                "assertions": [],
+                "tests": "",
+                "docs": "",
+                "auth": {
+                  "mode": "inherit"
+                }
+              }
+            },
+            {
+              "type": "http",
+              "name": "failure test",
+              "filename": "failure test.bru",
+              "seq": 2,
+              "request": {
+                "url": "{{appOneUrl}}/failuretest",
+                "method": "GET",
+                "headers": [],
+                "params": [],
+                "body": {
+                  "mode": "none",
+                  "formUrlEncoded": [],
+                  "multipartForm": [],
+                  "file": []
+                },
+                "script": {},
+                "vars": {},
+                "assertions": [],
+                "tests": "",
+                "docs": "",
+                "auth": {
+                  "mode": "inherit"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "folder",
+          "name": "App2",
+          "filename": "App2",
+          "root": {
+            "meta": {
+              "name": "App2"
+            }
+          },
+          "items": [
+            {
+              "type": "http",
+              "name": "Weather Forecast",
+              "filename": "Weather Forecast.bru",
+              "seq": 1,
+              "request": {
+                "url": "{{messageBrokerUrl}}/App2/weatherforecast",
+                "method": "GET",
+                "headers": [],
+                "params": [],
+                "body": {
+                  "mode": "none",
+                  "formUrlEncoded": [],
+                  "multipartForm": [],
+                  "file": []
+                },
+                "script": {},
+                "vars": {},
+                "assertions": [],
+                "tests": "",
+                "docs": "",
+                "auth": {
+                  "mode": "inherit"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "http",
+          "name": "Open Api docs",
+          "filename": "Open Api docs.bru",
+          "seq": 1,
+          "request": {
+            "url": "{{messageBrokerUrl}}/openapi/v1.json",
+            "method": "GET",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": [],
+              "file": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "inherit"
+            }
+          }
+        },
+        {
+          "type": "folder",
+          "name": "Saga",
+          "filename": "Saga",
+          "root": {
+            "meta": {
+              "name": "Saga"
+            }
+          },
+          "items": [
+            {
+              "type": "http",
+              "name": "Create Saga",
+              "filename": "Create Saga.bru",
+              "seq": 1,
+              "request": {
+                "url": "{{messageBrokerUrl}}/saga",
+                "method": "POST",
+                "headers": [],
+                "params": [],
+                "body": {
+                  "mode": "none",
+                  "formUrlEncoded": [],
+                  "multipartForm": [],
+                  "file": []
+                },
+                "script": {},
+                "vars": {},
+                "assertions": [],
+                "tests": "",
+                "docs": "",
+                "auth": {
+                  "mode": "inherit"
+                }
+              }
+            },
+            {
+              "type": "http",
+              "name": "Update Saga",
+              "filename": "Update Saga.bru",
+              "seq": 2,
+              "request": {
+                "url": "{{messageBrokerUrl}}/saga",
+                "method": "PUT",
+                "headers": [],
+                "params": [],
+                "body": {
+                  "mode": "json",
+                  "json": "{\n  \"step\": \"Started\",\n  \"key\": \"c906116a-d0b9-4583-9cae-24f7474cbdbb\"\n}",
+                  "formUrlEncoded": [],
+                  "multipartForm": [],
+                  "file": []
+                },
+                "script": {},
+                "vars": {},
+                "assertions": [],
+                "tests": "",
+                "docs": "",
+                "auth": {
+                  "mode": "inherit"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "App1",
+      "filename": "App1",
+      "root": {
+        "meta": {
+          "name": "App1"
+        }
+      },
+      "items": [
+        {
+          "type": "http",
+          "name": "Weather Forecast",
+          "filename": "Weather Forecast.bru",
+          "seq": 1,
+          "request": {
+            "url": "{{appOneUrl}}/weatherforecast",
+            "method": "GET",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": [],
+              "file": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "inherit"
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Open Api docs",
+          "filename": "Open Api docs.bru",
+          "seq": 2,
+          "request": {
+            "url": "{{appOneUrl}}/openapi/v1.json",
+            "method": "GET",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": [],
+              "file": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "inherit"
+            }
+          }
+        },
+        {
+          "type": "folder",
+          "name": "Shop",
+          "filename": "Shop",
+          "root": {
+            "meta": {
+              "name": "Shop"
+            }
+          },
+          "items": [
+            {
+              "type": "http",
+              "name": "Create Order",
+              "filename": "Create Order.bru",
+              "seq": 1,
+              "request": {
+                "url": "{{appOneUrl}}/Shop/",
+                "method": "POST",
+                "headers": [],
+                "params": [],
+                "body": {
+                  "mode": "json",
+                  "json": "{\n  \"item\": \"batata\"\n}",
+                  "text": "batata",
+                  "formUrlEncoded": [],
+                  "multipartForm": [],
+                  "file": []
+                },
+                "script": {
+                  "res": "const body = res.getBody();\nbru.setVar(\"orderNumber\",body.orderNumber)"
+                },
+                "vars": {},
+                "assertions": [],
+                "tests": "",
+                "docs": "",
+                "auth": {
+                  "mode": "inherit"
+                }
+              }
+            },
+            {
+              "type": "http",
+              "name": "Get Order",
+              "filename": "Get Order.bru",
+              "seq": 2,
+              "request": {
+                "url": "{{appOneUrl}}/Shop/:orderNumber",
+                "method": "GET",
+                "headers": [],
+                "params": [
+                  {
+                    "name": "orderNumber",
+                    "value": "{{orderNumber}}",
+                    "type": "path",
+                    "enabled": true
+                  }
+                ],
+                "body": {
+                  "mode": "none",
+                  "formUrlEncoded": [],
+                  "multipartForm": [],
+                  "file": []
+                },
+                "script": {},
+                "vars": {},
+                "assertions": [],
+                "tests": "",
+                "docs": "",
+                "auth": {
+                  "mode": "inherit"
+                }
+              }
+            },
+            {
+              "type": "http",
+              "name": "Update Order",
+              "filename": "Update Order.bru",
+              "seq": 3,
+              "request": {
+                "url": "{{appOneUrl}}/Shop/",
+                "method": "PUT",
+                "headers": [],
+                "params": [],
+                "body": {
+                  "mode": "json",
+                  "json": "{\n  \"orderNumber\": \"{{orderNumber}}\",\n  \"paymentStatus\": \"Paid\",\n  \"item\": \"batata\"\n}",
+                  "formUrlEncoded": [],
+                  "multipartForm": [],
+                  "file": []
+                },
+                "script": {},
+                "vars": {},
+                "assertions": [],
+                "tests": "",
+                "docs": "",
+                "auth": {
+                  "mode": "inherit"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "App2",
+      "filename": "App2",
+      "root": {
+        "meta": {
+          "name": "App2"
+        }
+      },
+      "items": [
+        {
+          "type": "http",
+          "name": "Open Api docs",
+          "filename": "Open Api docs.bru",
+          "seq": 2,
+          "request": {
+            "url": "{{appTwoUrl}}/openapi/v1.json",
+            "method": "GET",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": [],
+              "file": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "inherit"
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Weather Forecast",
+          "filename": "Weather Forecast.bru",
+          "seq": 1,
+          "request": {
+            "url": "{{appTwoUrl}}/weatherforecast",
+            "method": "GET",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": [],
+              "file": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "inherit"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "activeEnvironmentUid": "zD0DL3VCK4zsN9va6ztsr",
+  "environments": [
+    {
+      "variables": [
+        {
+          "name": "messageBrokerUrl",
+          "value": "http://10.8.0.3:7000",
+          "enabled": true,
+          "secret": false,
+          "type": "text"
+        },
+        {
+          "name": "appOneUrl",
+          "value": "http://10.8.0.3:5000",
+          "enabled": true,
+          "secret": false,
+          "type": "text"
+        },
+        {
+          "name": "appTwoUrl",
+          "value": "http://10.8.0.3:6000",
+          "enabled": true,
+          "secret": false,
+          "type": "text"
+        }
+      ],
+      "name": "remote-code"
+    }
+  ],
+  "brunoConfig": {
+    "version": "1",
+    "name": "Tolerancia a falhas - swe 2",
+    "type": "collection",
+    "ignore": [
+      "node_modules",
+      ".git"
+    ],
+    "size": 0.0004949569702148438,
+    "filesCount": 4
+  }
+}

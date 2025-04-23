@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using ToleranciaFalhas.App1.Saga;
 
 namespace ToleranciaFalhas.MessageBroker
@@ -19,6 +20,11 @@ namespace ToleranciaFalhas.MessageBroker
             builder.Services.AddHttpClient();
             builder.Services.AddSingleton<CircuitBreakerManager>(); // this calls the constructor with default parameter values; we can change that with a lambda on this very call
             builder.Services.AddSingleton<ExampleSaga>();
+
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
 
             var app = builder.Build();
 
