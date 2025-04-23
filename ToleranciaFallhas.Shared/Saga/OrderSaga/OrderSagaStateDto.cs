@@ -2,10 +2,10 @@
 
 public class OrderSagaStateDto
 {
-    public PaymentStatus Step { get; set; }
+    public OrderStatus Step { get; set; }
     public Guid Key { get; set; }
 
-    public OrderSagaStateDto(PaymentStatus step, Guid key)
+    public OrderSagaStateDto(OrderStatus step, Guid key)
     {
         Step = step;
         Key = key;

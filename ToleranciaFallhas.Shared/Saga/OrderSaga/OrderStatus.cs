@@ -1,6 +1,7 @@
 ﻿namespace ToleranciaFallhas.Shared.Saga.OrderSaga;
 
-public enum PaymentStatus
+public enum OrderStatus
+
 {
     Pending,
     AwaitingPayment,

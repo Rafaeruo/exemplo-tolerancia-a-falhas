@@ -44,13 +44,13 @@ public class ShopController : ControllerBase
         var order = new Order
         {
             Item = item.Item,
-            PaymentStatus = PaymentStatus.Pending
+            OrderStatus = OrderStatus.Pending
         };
 
         order.Id = _database.Save(order);
 
         var client = _httpClientFactory.CreateClient();
-        var content = new OrderSagaStateDto(order.PaymentStatus, order.Id);
+        var content = new OrderSagaStateDto(order.OrderStatus, order.Id);
         var response = await client.PutAsJsonAsync(_proxyConfig.BaseUrl + "/OrderEvents/NewOrderEvent", content);
 
         Response.Headers.Append("location", "/Shop/" + order.Id.ToString());
@@ -63,7 +63,7 @@ public class ShopController : ControllerBase
     public void ConfirmPayment(Guid orderId)
     {
         var order = _database.Get(orderId);
-        order.PaymentStatus = PaymentStatus.Paid;
+        order.OrderStatus = OrderStatus.Paid;
         _database.Update(orderId, order);
     }
 
@@ -72,7 +72,7 @@ public class ShopController : ControllerBase
     public void RejectPayment(Guid orderId)
     {
         var order = _database.Get(orderId);
-        order.PaymentStatus = PaymentStatus.PaymentRejected;
+        order.OrderStatus = OrderStatus.PaymentRejected;
         _database.Update(orderId, order);
     }
 }

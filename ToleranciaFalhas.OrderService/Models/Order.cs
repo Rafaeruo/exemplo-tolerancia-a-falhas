@@ -12,5 +12,5 @@ public record Order
     public Guid Id { get; set; }
     public required string Item { get; set; }
 
-    public required PaymentStatus PaymentStatus { get; set; }
+    public required OrderStatus OrderStatus { get; set; }
 }

@@ -4,12 +4,12 @@ using ToleranciaFallhas.Shared.Saga.OrderSaga;
 
 namespace ToleranciaFalhas.MessageBroker.Saga;
 
-public record OrderSagaState : SagaState<PaymentStatus, Guid>
+public record OrderSagaState : SagaState<OrderStatus, Guid>
 {
     [SetsRequiredMembers]
     public OrderSagaState()
     {
-        Step = PaymentStatus.Pending;
+        Step = OrderStatus.Pending;
         _key = Guid.NewGuid();
     }
 

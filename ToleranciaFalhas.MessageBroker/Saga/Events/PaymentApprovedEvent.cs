@@ -3,7 +3,7 @@ using ToleranciaFallhas.Shared.Saga.OrderSaga;
 
 namespace ToleranciaFalhas.MessageBroker.Saga.Events;
 
-public class PaymentApprovedEvent : ISagaEvent<OrderSagaState, PaymentStatus, Guid>
+public class PaymentApprovedEvent : ISagaEvent<OrderSagaState, OrderStatus, Guid>
 {
     private readonly OrderSagaState _state;
 
